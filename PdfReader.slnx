@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PdfReader.Api/PdfReader.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PdfReader.Tests/PdfReader.Tests.csproj" />
+  </Folder>
+</Solution>

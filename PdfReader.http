@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:5000
+
+### Health check
+GET {{baseUrl}}/health
+Accept: application/json
+
+### Reject request without a file
+POST {{baseUrl}}/pdfs
+Content-Type: multipart/form-data; boundary=pdf-test-boundary
+
+--pdf-test-boundary--
+
+### Reject a file without the %PDF- signature
+POST {{baseUrl}}/pdfs
+Content-Type: multipart/form-data; boundary=pdf-test-boundary
+
+--pdf-test-boundary
+Content-Disposition: form-data; name="file"; filename="not-a-pdf.txt"
+Content-Type: text/plain
+
+This is not a PDF file.
+--pdf-test-boundary--
+
+### Upload a PDF
+# Place a PDF named sample.pdf beside this file before running this request.
+POST {{baseUrl}}/pdfs
+Content-Type: multipart/form-data; boundary=pdf-upload-boundary
+
+--pdf-upload-boundary
+Content-Disposition: form-data; name="file"; filename="sample.pdf"
+Content-Type: application/pdf
+
+< ./sample.pdf
+--pdf-upload-boundary--
+
+### Parse a bank statement as JSON
+# A valid, text-based statement returns HTTP 200 and structured JSON.
+POST {{baseUrl}}/bank-statements
+Content-Type: multipart/form-data; boundary=bank-statement-boundary
+
+--bank-statement-boundary
+Content-Disposition: form-data; name="file"; filename="sample.pdf"
+Content-Type: application/pdf
+
+< ./sample.pdf
+--bank-statement-boundary--
