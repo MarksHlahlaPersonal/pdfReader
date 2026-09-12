@@ -40,6 +40,7 @@ app.MapPost("/pdfs", async (IFormFile? file, PdfUploadService pdfUploadService,
 })
 .DisableAntiforgery();
 
+<<<<<<< HEAD
 app.MapPost("/bank-statements", async (IFormFile? file, PdfUploadService pdfUploadService,
 	LlamaSharpBankStatementParser llamaParser, CancellationToken cancellationToken) =>
 {
@@ -49,6 +50,18 @@ app.MapPost("/bank-statements", async (IFormFile? file, PdfUploadService pdfUplo
 	}
 
 
+=======
+app.MapPost("/bank-statements", async (HttpRequest request, PdfUploadService pdfUploadService,
+	LlamaSharpBankStatementParser llamaParser, CancellationToken cancellationToken) =>
+{
+	IFormFile? file = null;
+	if (request.HasFormContentType)
+	{
+		var form = await request.ReadFormAsync(cancellationToken);
+		file = form.Files.GetFile("file");
+	}
+
+>>>>>>> e7c6623 (init commit)
 	if (file is null || file.Length == 0)
 	{
 		return Results.BadRequest(new
