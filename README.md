@@ -29,19 +29,22 @@ dotnet test PdfReader.slnx
 
 The service tests cover empty uploads, invalid signatures, unreadable PDFs that may need OCR, and readable PDFs whose extracted lines are stored as UTF-8 bytes.
 
-## LlamaSharp bank-statement parsing
+## Semantic Kernel bank-statement parsing
 
-`POST /bank-statements` extracts text with PdfPig and sends that text to a local LlamaSharp GGUF model. Configure the model path before using this endpoint:
+`POST /bank-statements` queues the PDF and returns `202 Accepted` with a request ID. The PDF is processed in the background, and the result is streamed from `GET /bank-statements/{requestId}/events` using Server-Sent Events. The service sends `processing`, periodic keepalives, and either `completed` or `failed`.
+
+The background parser sends extracted text through Semantic Kernel to a local llama.cpp server exposing the OpenAI-compatible API. Configure the endpoint and model name before using this endpoint:
 
 ```json
 {
-	"LlamaSharp": {
-		"ModelPath": "/models/your-bank-statement-model.gguf",
-		"ContextSize": 4096,
-		"GpuLayerCount": 0,
-		"MaxTokens": 2048
+	"SemanticKernel": {
+		"Endpoint": "http://localhost:8080/v1",
+		"Model": "local-model",
+		"ApiKey": "no-key",
+		"MaxTokens": 2048,
+		"HttpClientTimeoutSeconds": 900
 	}
 }
 ```
 
-The endpoint returns `422` with a structured error when the model is not configured, cannot be loaded, or returns invalid JSON. It does not upload or download a model automatically.
+The endpoint returns `422` with a structured error when the endpoint or model is not configured, the local server cannot be reached, or the model returns invalid JSON. It does not upload or download a model automatically.
